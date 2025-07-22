@@ -9,15 +9,15 @@ import androidx.room.Query
 @Dao
 interface NoteDao {
 
-    @Query("SELECT * FROM notes ORDER BY timestamp DESC")
-    suspend fun getAllNotes(): List<NoteEntity>
+    @Query("SELECT * FROM notes")
+    fun getAllNotes(): List<NoteEntity>
 
     @Query("SELECT * FROM notes WHERE id = :id")
-    suspend fun getNoteById(id: Int): NoteEntity?
+    fun getNoteById(id: Int): NoteEntity?
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertNote(note: NoteEntity)
+    fun insertNote(note: NoteEntity)
 
     @Delete
-    suspend fun deleteNote(note: NoteEntity)
+    fun deleteNote(note: NoteEntity)
 }

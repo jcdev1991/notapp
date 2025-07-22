@@ -7,9 +7,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.cursocompose.notapp.presentation.detail.NoteDetailScreen
 import com.cursocompose.notapp.presentation.list.NoteListScreen
-
 
 @Composable
 fun NoteNavHost(modifier: Modifier = Modifier) {
@@ -22,7 +20,7 @@ fun NoteNavHost(modifier: Modifier = Modifier) {
         modifier = modifier
     ) {
         composable(route = NavigationRoute.NOTE_LIST) {
-//            NoteListScreen(navController)
+            NoteListScreen(navController)
         }
         composable(
             route = NavigationRoute.NOTE_DETAIL_WITH_ID, arguments = listOf(navArgument("noteId") {
