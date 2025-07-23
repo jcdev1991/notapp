@@ -53,9 +53,9 @@ fun NoteCreateDialog(onDismiss: () -> Unit, onCreateNote: (Note) -> Unit) {
                         if (title.isNotBlank() || content.isNotBlank()) {
                             onCreateNote(
                                 Note(
+                                    id = System.currentTimeMillis(),
                                     title = title,
-                                    content = content,
-                                    timestamp = System.currentTimeMillis()
+                                    content = content
                                 )
                             )
                             onDismiss()

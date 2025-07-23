@@ -12,7 +12,7 @@ class NoteRepositoryImpl(private val dao: NoteDao) : NoteRepository {
         return dao.getAllNotes().map { it.toDomain() }
     }
 
-    override suspend fun getNoteById(id: Int): Note? {
+    override suspend fun getNoteById(id: Long): Note? {
         return dao.getNoteById(id)?.toDomain()
     }
 
