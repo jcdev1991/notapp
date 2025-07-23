@@ -7,6 +7,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.cursocompose.notapp.presentation.detail.NoteDetailScreen
 import com.cursocompose.notapp.presentation.list.NoteListScreen
 
 @Composable
@@ -22,14 +23,17 @@ fun NoteNavHost(modifier: Modifier = Modifier) {
         composable(route = NavigationRoute.NOTE_LIST) {
             NoteListScreen(navController)
         }
+
         composable(
-            route = NavigationRoute.NOTE_DETAIL_WITH_ID, arguments = listOf(navArgument("noteId") {
-                type = NavType.IntType
-                defaultValue = -1
-            })
-        ) {
-            val noteId = it.arguments?.getInt("noteId") ?: -1
-//            NoteDetailScreen(navController, noteId)
+            route = NavigationRoute.NOTE_DETAIL_WITH_ID, arguments = listOf(
+                navArgument("noteId") {
+                    type = NavType.LongType
+                    defaultValue = -1L
+                })
+        ) { backStackEntry ->
+            val noteId = backStackEntry.arguments?.getLong("noteId") ?: -1L
+            NoteDetailScreen(
+                noteId = noteId, onNoteSaved = { navController.popBackStack() })
         }
     }
 }

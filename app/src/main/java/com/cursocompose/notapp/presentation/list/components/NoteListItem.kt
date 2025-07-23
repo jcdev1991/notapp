@@ -24,8 +24,6 @@ fun NoteListItem(note: Note, onClick: () -> Unit, onDelete: () -> Unit) {
             modifier = Modifier.padding(16.dp), verticalAlignment = Alignment.CenterVertically
         ) {
             Column(modifier = Modifier.weight(1f)) {
-                Text(text = note.id.toString(), style = MaterialTheme.typography.bodyMedium)
-                Spacer(modifier = Modifier.height(4.dp))
                 Text(text = note.title, style = MaterialTheme.typography.titleMedium)
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(text = note.content, style = MaterialTheme.typography.bodyMedium)
