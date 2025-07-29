@@ -6,7 +6,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
 class GetNoteUseCase(private val repository: NoteRepository) {
-    suspend operator fun invoke(id: Long): Note? = withContext(Dispatchers.IO) {
-        repository.getNoteById(id)
+    suspend operator fun invoke(id: Long): Note? {
+        return repository.getNoteById(id)
     }
 }

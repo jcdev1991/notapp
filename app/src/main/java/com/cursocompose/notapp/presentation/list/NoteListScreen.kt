@@ -13,11 +13,14 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.navigation.NavController
 import com.cursocompose.notapp.core.util.Resource
+import com.cursocompose.notapp.domain.model.Note
 import com.cursocompose.notapp.presentation.list.components.NoteCreateDialog
 import com.cursocompose.notapp.presentation.list.components.NoteListItem
 import com.cursocompose.notapp.presentation.navigation.NavigationRoute
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -25,7 +28,9 @@ fun NoteListScreen(navController: NavController, viewModel: NoteListViewModel = 
 
     val state by viewModel.state
     var isDialogOpen by remember { mutableStateOf(false) }
-    val lifecycleOwner = androidx.lifecycle.compose.LocalLifecycleOwner.current
+    val snackbarHostState = remember { SnackbarHostState() }
+    val coroutineScope = rememberCoroutineScope()
+    val lifecycleOwner = LocalLifecycleOwner.current
 
     DisposableEffect(lifecycleOwner) {
         val observer = LifecycleEventObserver { _, event ->
@@ -39,11 +44,17 @@ fun NoteListScreen(navController: NavController, viewModel: NoteListViewModel = 
         }
     }
 
-    Scaffold(topBar = { TopAppBar(title = { Text("Notas") }) }, floatingActionButton = {
-        FloatingActionButton(onClick = { isDialogOpen = true }) {
-            Icon(Icons.Default.Add, contentDescription = "Añadir nota")
+    Scaffold(
+        topBar = {
+            TopAppBar(title = { Text("Notas") })
+        },
+        snackbarHost = { SnackbarHost(snackbarHostState) },
+        floatingActionButton = {
+            FloatingActionButton(onClick = { isDialogOpen = true }) {
+                Icon(Icons.Default.Add, contentDescription = "Añadir nota")
+            }
         }
-    }) { padding ->
+    ) { padding ->
         Box(
             modifier = Modifier
                 .fillMaxSize()
@@ -67,22 +78,40 @@ fun NoteListScreen(navController: NavController, viewModel: NoteListViewModel = 
                         contentPadding = PaddingValues(vertical = 8.dp)
                     ) {
                         items(result.data ?: emptyList()) { note ->
-                            NoteListItem(note = note, onClick = {
-                                navController.navigate(
-                                    NavigationRoute.noteDetailWithId(note.id)
-                                )
-                            }, onDelete = {
-                                viewModel.onEvent(NoteListEvent.DeleteNote(note))
-                            })
+                            NoteListItem(
+                                note = note,
+                                onClick = {
+                                    navController.navigate(
+                                        NavigationRoute.noteDetailWithId(note.id)
+                                    )
+                                },
+                                onDelete = {
+                                    viewModel.onEvent(NoteListEvent.DeleteNote(note))
+                                    coroutineScope.launch {
+                                        val resultSnackbar = snackbarHostState.showSnackbar(
+                                            message = "Nota eliminada",
+                                            actionLabel = "Deshacer",
+                                            duration = SnackbarDuration.Short
+                                        )
+                                        if (resultSnackbar == SnackbarResult.ActionPerformed) {
+                                            viewModel.onEvent(NoteListEvent.RestoreNote)
+                                        }
+                                    }
+                                }
+                            )
                         }
                     }
                 }
             }
 
             if (isDialogOpen) {
-                NoteCreateDialog(onDismiss = { isDialogOpen = false }, onCreateNote = { note ->
-                    viewModel.onEvent(NoteListEvent.AddNote(note))
-                })
+                NoteCreateDialog(
+                    onDismiss = { isDialogOpen = false },
+                    onCreateNote = { note ->
+                        viewModel.onEvent(NoteListEvent.AddNote(note))
+                        isDialogOpen = false
+                    }
+                )
             }
         }
     }

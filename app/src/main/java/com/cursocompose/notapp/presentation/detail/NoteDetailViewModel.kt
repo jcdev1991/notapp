@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.cursocompose.notapp.domain.model.Note
 import com.cursocompose.notapp.domain.usecase.NoteUseCases
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -21,7 +22,7 @@ class NoteDetailViewModel @Inject constructor(private val noteUseCases: NoteUseC
     fun onEvent(event: NoteDetailEvent) {
         when (event) {
             is NoteDetailEvent.LoadNote -> {
-                viewModelScope.launch {
+                viewModelScope.launch(Dispatchers.IO) {
                     _state.value = _state.value.copy(isLoading = true, error = null)
                     try {
                         val note = noteUseCases.getNote(event.id)
@@ -52,7 +53,7 @@ class NoteDetailViewModel @Inject constructor(private val noteUseCases: NoteUseC
             }
 
             is NoteDetailEvent.SaveNote -> {
-                viewModelScope.launch {
+                viewModelScope.launch(Dispatchers.IO) {
                     try {
                         val note = Note(
                             id = currentNoteId ?: System.currentTimeMillis(),

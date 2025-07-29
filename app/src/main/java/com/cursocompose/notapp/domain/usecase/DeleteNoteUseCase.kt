@@ -6,7 +6,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
 class DeleteNoteUseCase(private val repository: NoteRepository) {
-    suspend operator fun invoke(note: Note) = withContext(Dispatchers.IO)  {
+    suspend operator fun invoke(note: Note)  {
         repository.deleteNote(note)
     }
 }

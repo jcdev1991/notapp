@@ -6,7 +6,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
 class GetNoteListUseCase(private val repository: NoteRepository) {
-    suspend operator fun invoke(): List<Note> = withContext(Dispatchers.IO) {
-        repository.getNotes()
+    suspend operator fun invoke(): List<Note> {
+        return repository.getNotes()
     }
 }

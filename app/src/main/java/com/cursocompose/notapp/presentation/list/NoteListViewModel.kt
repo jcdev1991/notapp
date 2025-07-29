@@ -7,6 +7,7 @@ import com.cursocompose.notapp.domain.model.Note
 import com.cursocompose.notapp.domain.usecase.NoteUseCases
 import com.cursocompose.notapp.core.util.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -31,7 +32,7 @@ class NoteListViewModel @Inject constructor(private val noteUseCases: NoteUseCas
             is NoteListEvent.LoadNotes -> {
                 loadJob?.cancel()
                 state.value = state.value.copy(state = Resource.Loading())
-                loadJob = viewModelScope.launch {
+                loadJob = viewModelScope.launch(Dispatchers.IO) {
                     try {
                         val notes = noteUseCases.getNotes()
                         state.value = state.value.copy(state = Resource.Success(notes))
@@ -43,14 +44,14 @@ class NoteListViewModel @Inject constructor(private val noteUseCases: NoteUseCas
             }
 
             is NoteListEvent.AddNote -> {
-                viewModelScope.launch {
+                viewModelScope.launch(Dispatchers.IO) {
                     noteUseCases.addNote(event.note)
                     onEvent(NoteListEvent.LoadNotes)
                 }
             }
 
             is NoteListEvent.DeleteNote -> {
-                viewModelScope.launch {
+                viewModelScope.launch(Dispatchers.IO) {
                     noteUseCases.deleteNote(event.note)
                     recentlyDeletedNote = event.note
                     onEvent(NoteListEvent.LoadNotes)
@@ -59,7 +60,7 @@ class NoteListViewModel @Inject constructor(private val noteUseCases: NoteUseCas
 
             is NoteListEvent.RestoreNote -> {
                 recentlyDeletedNote?.let { note ->
-                    viewModelScope.launch {
+                    viewModelScope.launch(Dispatchers.IO) {
                         noteUseCases.addNote(note)
                         recentlyDeletedNote = null
                         onEvent(NoteListEvent.LoadNotes)
